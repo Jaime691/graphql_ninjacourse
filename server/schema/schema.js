@@ -9,7 +9,8 @@ const {
   GraphQLSchema,
   GraphQLID,
   GraphQLInt,
-  GraphQLList
+  GraphQLList,
+  GraphQLNonNull
 } = graphql;
 
 const BookType = new GraphQLObjectType({
@@ -21,8 +22,8 @@ const BookType = new GraphQLObjectType({
     author: {
       type: AuthorType,
       resolve(parent, args) {
-        // return _.find(authors, { id: parent.authorid });
-        return Author.findById(parent.authorid);
+        // return _.find(authors, { id: parent.authorId });
+        return Author.findById(parent.authorId);
       }
     }
   })
@@ -37,8 +38,8 @@ const AuthorType = new GraphQLObjectType({
     books: {
       type: new GraphQLList(BookType),
       resolve(parent) {
-        // return _.filter(books, { authorid: parent.id });
-        return Book.find({ authorid: parent.id });
+        // return _.filter(books, { authorId: parent.id });
+        return Book.find({ authorId: parent.id });
       }
     }
   })
@@ -89,10 +90,10 @@ const Mutation = new GraphQLObjectType({
       type: AuthorType,
       args: {
         name: {
-          type: GraphQLString
+          type: new GraphQLNonNull(GraphQLString)
         },
         age: {
-          type: GraphQLInt
+          type: new GraphQLNonNull(GraphQLInt)
         }
       },
       resolve(parent, args) {
@@ -106,15 +107,15 @@ const Mutation = new GraphQLObjectType({
     addBook: {
       type: BookType,
       args: {
-        name: { type: GraphQLString },
-        genre: { type: GraphQLString },
-        authorid: { type: GraphQLID }
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        genre: { type: new GraphQLNonNull(GraphQLString) },
+        authorId: { type: new GraphQLNonNull(GraphQLID) }
       },
       resolve(parent, args) {
         let book = new Book({
           name: args.name,
           genre: args.genre,
-          authorid: args.authorid
+          authorId: args.authorId
         });
         return book.save();
       }
@@ -128,12 +129,12 @@ module.exports = new GraphQLSchema({
 });
 
 // var books = [
-//   { name: 'Name of the Wind', genre: 'Fantasy', id: '1', authorid: '1' },
-//   { name: 'The final empire', genre: 'Fantasy', id: '2', authorid: '2' },
-//   { name: 'The long earth', genre: 'Sci-Fi', id: '3', authorid: '3' },
-//   { name: 'Hero of ages', genre: 'Fantasy', id: '4', authorid: '2' },
-//   { name: 'The colour of magic', genre: 'Fantasy', id: '5', authorid: '3' },
-//   { name: 'The light fantastic', genre: 'Sci-Fi', id: '6', authorid: '3' }
+//   { name: 'Name of the Wind', genre: 'Fantasy', id: '1', authorId: '1' },
+//   { name: 'The final empire', genre: 'Fantasy', id: '2', authorId: '2' },
+//   { name: 'The long earth', genre: 'Sci-Fi', id: '3', authorId: '3' },
+//   { name: 'Hero of ages', genre: 'Fantasy', id: '4', authorId: '2' },
+//   { name: 'The colour of magic', genre: 'Fantasy', id: '5', authorId: '3' },
+//   { name: 'The light fantastic', genre: 'Sci-Fi', id: '6', authorId: '3' }
 // ];
 
 // var authors = [
